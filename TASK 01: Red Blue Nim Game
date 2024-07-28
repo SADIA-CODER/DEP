@@ -1,0 +1,74 @@
+import sys
+import argparse
+
+class RedBlueNimGame:
+    def __init__(self, num_red, num_blue, version, first_player, depth):
+        self.num_red = num_red
+        self.num_blue = num_blue
+        self.version = version
+        self.current_player = first_player
+        self.depth = depth
+
+    def is_game_over(self):
+        return self.num_red == 0 or self.num_blue == 0
+
+    def get_score(self):
+        return self.num_red * 2 + self.num_blue * 3
+
+    def human_move(self):
+        while True:
+            try:
+                red = int(input("Enter number of red marbles to pick: "))
+                blue = int(input("Enter number of blue marbles to pick: "))
+                if red <= self.num_red and blue <= self.num_blue and (red > 0 or blue > 0):
+                    self.num_red -= red
+                    self.num_blue -= blue
+                    break
+                else:
+                    print("Invalid move. Try again.")
+            except ValueError:
+                print("Invalid input. Enter integers.")
+
+    def computer_move(self):
+        # Placeholder for the AI move logic using MinMax with Alpha Beta Pruning
+        if self.num_red > 0:
+            print("Computer picks: 1 red marble")
+            self.num_red -= 1
+        elif self.num_blue > 0:
+            print("Computer picks: 1 blue marble")
+            self.num_blue -= 1
+
+    def play_game(self):
+        print(f"Game Started: {self.version.capitalize()} Version")
+        print(f"Initial Piles: Red: {self.num_red}, Blue: {self.num_blue}")
+        print(f"First Player: {self.current_player.capitalize()}")
+        while not self.is_game_over():
+            if self.current_player == 'human':
+                self.human_move()
+                self.current_player = 'computer'
+            else:
+                self.computer_move()
+                self.current_player = 'human'
+            print(f"Current Piles: Red: {self.num_red}, Blue: {self.num_blue}")
+
+        print("Game Over")
+        print(f"Score: {self.get_score()}")
+        if self.version == 'standard':
+            print("You lose!" if self.current_player == 'human' else "Computer loses!")
+        elif self.version == 'misere':
+            print("You win!" if self.current_player == 'human' else "Computer wins!")
+
+def main():
+    parser = argparse.ArgumentParser(description='Play Red-Blue Nim Game')
+    parser.add_argument('num_red', type=int, help='Number of red marbles')
+    parser.add_argument('num_blue', type=int, help='Number of blue marbles')
+    parser.add_argument('version', type=str, choices=['standard', 'misere'], help='Game version')
+    parser.add_argument('first_player', type=str, choices=['computer', 'human'], help='First player')
+    parser.add_argument('--depth', type=int, default=3, help='Search depth for AI')
+    args = parser.parse_args()
+
+    game = RedBlueNimGame(args.num_red, args.num_blue, args.version, args.first_player, args.depth)
+    game.play_game()
+
+if __name__ == '__main__':
+    main()
